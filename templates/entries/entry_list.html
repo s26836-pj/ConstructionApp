@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Lista Wpisów{% endblock %}
+{% block content %}
+
+<h1>Lista Wpisów</h1>
+
+<form method="get" class="form-inline mb-3">
+  <div class="form-group mr-2">
+    <label for="start_date" class="mr-2">Od:</label>
+    <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request.GET.start_date }}">
+  </div>
+  <div class="form-group mr-2">
+    <label for="end_date" class="mr-2">Do:</label>
+    <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request.GET.end_date }}">
+  </div>
+  <div class="form-group mr-2">
+    <label for="author" class="mr-2">Autor:</label>
+    <input type="text" name="author" id="author" class="form-control" placeholder="np. Jan" value="{{ request.GET.author }}">
+  </div>
+  <div class="form-group mr-2">
+    <label for="construction" class="mr-2">Budowa:</label>
+    <select name="construction" id="construction" class="form-control">
+      <option value="">Wszystkie</option>
+      {% for budowa in constructions %}
+        <option value="{{ budowa.id }}"
+          {% if request.GET.construction == budowa.id|stringformat:"s" %}selected{% endif %}>
+          {{ budowa.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="form-group mr-2">
+    <label for="content" class="mr-2">Treść:</label>
+    <input type="text" name="content" id="content" class="form-control" placeholder="Szukaj treści" value="{{ request.GET.content }}">
+  </div>
+  <div class="form-group mr-2">
+    <label for="operational_activity" class="mr-2">Czynność:</label>
+    <input type="text" name="operational_activity" id="operational_activity" class="form-control" placeholder="np. Montaż" value="{{ request.GET.operational_activity }}">
+  </div>
+  <button type="submit" class="btn btn-primary">Filtruj</button>
+</form>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Autor</th>
+      <th>Budowa</th>
+      <th>Czynność</th>
+      <th>Treść</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in entries %}
+      <tr>
+        <td>{{ entry.created_at|date:"Y-m-d H:i" }}</td>
+        <td>{{ entry.author.username }}</td>
+        <td>{{ entry.construction.name }}</td>
+        <td>{{ entry.operational_activity }}</td>
+        <td>{{ entry.content|truncatewords:10 }}</td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="5">Brak wpisów dla podanych kryteriów.</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

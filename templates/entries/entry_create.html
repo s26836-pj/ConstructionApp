@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Create New Entry{% endblock %}
+{% block content %}
+  <h1>Create a New Entry</h1>
+  <form method="POST" class="mt-4">
+    {% csrf_token %}
+
+    {# Wyświetlanie błędów ogólnych formularza #}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div class="form-group">
+      <label for="{{ form.construction.id_for_label }}">Construction</label>
+      {{ form.construction }}
+      {% if form.construction.errors %}
+        <div class="text-danger">
+          {{ form.construction.errors }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label for="{{ form.operational_activity.id_for_label }}">Operational Activity</label>
+      {{ form.operational_activity }}
+      {% if form.operational_activity.errors %}
+        <div class="text-danger">
+          {{ form.operational_activity.errors }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label for="{{ form.content.id_for_label }}">Content</label>
+      {{ form.content }}
+      {% if form.content.errors %}
+        <div class="text-danger">
+          {{ form.content.errors }}
+        </div>
+      {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+  </form>
+{% endblock %}

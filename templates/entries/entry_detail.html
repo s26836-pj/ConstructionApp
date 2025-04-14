@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Entry Details{% endblock %}
+
+{% block content %}
+<div class="card mb-3">
+  <div class="card-header">
+    Entry Details
+  </div>
+  <div class="card-body">
+    <p><strong>Date:</strong> {{ entry.created_at|date:"Y-m-d H:i" }}</p>
+    <p><strong>Author:</strong> {{ entry.author.get_full_name|default:entry.author.username }}</p>
+    <p><strong>Construction:</strong> {{ entry.construction.name }}</p>
+    {% if entry.operational_activity %}
+      <p><strong>Operational Activity:</strong> {{ entry.operational_activity }}</p>
+    {% endif %}
+    <p><strong>Content:</strong></p>
+    <p>{{ entry.content }}</p>
+  </div>
+</div>
+{% endblock %}
