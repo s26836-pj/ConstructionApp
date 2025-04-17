@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Constructions List{% endblock %}
+
+{% block content %}
+  <h1 class="mb-4">Constructions</h1>
+  {% if constructions %}
+    <ul class="list-group">
+      {% for construction in constructions %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <!-- Załóżmy, że chcesz wyświetlić nazwę i lokalizację -->
+          <div>
+            <strong>{{ construction.name }}</strong><br>
+            <small>{{ construction.location }}</small>
+          </div>
+          <!-- Opcjonalnie możesz dodać przyciski np. do edycji lub usunięcia -->
+          <div>
+            <a href="{% url 'construction_detail' construction.pk %}" class="btn btn-sm btn-primary me-1">Detail</a>
+            <a href="{% url 'construction_update' construction.pk %}" class="btn btn-sm btn-warning me-1">Edit</a>
+            <a href="{% url 'construction_delete' construction.pk %}" class="btn btn-sm btn-danger">Delete</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No constructions available.</p>
+  {% endif %}
+{% endblock %}

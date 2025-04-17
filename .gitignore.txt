@@ -1,0 +1,62 @@
+# Python
+*.py[cod]
+__pycache__/
+*$py.class
+
+# Virtual environment (zmień 'venv' na nazwę folderu Twojego środowiska jeśli inna)
+venv/
+env/
+ENV/
+.venv/
+
+# Pliki build, instalacji, distribucji
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Backup i pliki tymczasowe edytorów
+*.bak
+*.swp
+*~
+*.tmp
+*.log
+
+# pliki cache i tymczasowe (m.in. Django cache)
+*.pot
+*.mo
+
+# pliki systemowe
+.DS_Store
+Thumbs.db
+
+# Pliki konfiguracyjne IDE
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Pliki środowiskowe
+.env
+.env.*
+
+# Bazy danych (jeśli korzystasz z sqlite)
+*.sqlite3
+
+# Media i statyczne - jeśli generujesz te pliki automatycznie w procesie deploymentu.
+# Możesz dodać je, jeśli nie chcesz przechowywać w repozytorium.
+media/
+staticfiles/
+
+# Inne pliki specyficzne dla projektu
+local_settings.py

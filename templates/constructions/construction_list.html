@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Constructions{% endblock %}
+
+{% block content %}
+<h1>Constructions</h1>
+
+<div class="mb-3">
+  <!-- Link do zarchiwizowanych -->
+  <a href="{% url 'construction_list' %}?show_archived=true" class="btn btn-secondary">
+    Pokaż zarchiwizowane
+  </a>
+  <!-- Link do aktywnych -->
+  <a href="{% url 'construction_list' %}" class="btn btn-secondary">
+    Pokaż tylko aktywne
+  </a>
+</div>
+
+{% if constructions %}
+  <ul class="list-group my-3">
+    {% for construction in constructions %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ construction.name }}</strong><br>
+          <small>{{ construction.location }}</small>
+        </div>
+        <div>
+          {% if not construction.is_archived %}
+            <a href="{% url 'construction_update' construction.pk %}" class="btn btn-sm btn-warning me-2">Edit</a>
+            <a href="{% url 'construction_archive' construction.pk %}" class="btn btn-sm btn-secondary me-2">Archive</a>
+          {% else %}
+            <span class="badge bg-danger me-2">Archived</span>
+          {% endif %}
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No constructions available.</p>
+{% endif %}
+
+<a href="{% url 'construction_create' %}" class="btn btn-success">Create New Construction</a>
+{% endblock %}

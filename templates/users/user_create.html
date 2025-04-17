@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Utwórz nowe konto{% endblock %}
+
+{% block content %}
+  <h2>Utwórz nowe konto użytkownika</h2>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Zapisz</button>
+  </form>
+{% endblock %}
+{% if form.errors %}
+  <div class="alert alert-danger">
+    <ul>
+      {% for field, errors in form.errors.items %}
+        {% for error in errors %}
+          <li><strong>{{ field }}:</strong> {{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
