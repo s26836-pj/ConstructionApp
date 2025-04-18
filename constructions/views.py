@@ -1,5 +1,7 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, UpdateView, CreateView
+
 from .forms import (
     ConstructionCreateForm,
     ConstructionUpdateForm,
@@ -10,7 +12,7 @@ from .models import Construction
 
 # Widok listy budów – domyślnie pokazuje tylko aktywne budowy (is_archived=False);
 # administrator może przełączyć się na wyświetlanie zarchiwizowanych za pomocą parametru GET.
-class ConstructionListView(ListView):
+class ConstructionListView(LoginRequiredMixin, ListView):
     model = Construction
     template_name = 'constructions/construction_list.html'
     context_object_name = 'constructions'
@@ -28,14 +30,14 @@ class ConstructionListView(ListView):
 
 
 # Widok tworzenia budowy
-class ConstructionCreateView(CreateView):
+class ConstructionCreateView(LoginRequiredMixin, CreateView):
     form_class = ConstructionCreateForm
     template_name = 'constructions/construction_form.html'
     success_url = reverse_lazy('construction_list')
 
 
 # Widok edycji budowy (bez archiwizacji)
-class ConstructionUpdateView(UpdateView):
+class ConstructionUpdateView(LoginRequiredMixin, UpdateView):
     model = Construction
     form_class = ConstructionUpdateForm
     template_name = 'constructions/construction_form.html'
@@ -44,7 +46,7 @@ class ConstructionUpdateView(UpdateView):
 
 # Widok archiwizacji budowy – zamiast usuwania budowy, administrator może ją zarchiwizować.
 # Używamy dedykowanego formularza, który umożliwia podanie (opcjonalnie) powodu archiwizacji.
-class ConstructionArchiveView(UpdateView):
+class ConstructionArchiveView(LoginRequiredMixin, UpdateView):
     model = Construction
     form_class = ConstructionArchiveForm
     template_name = 'constructions/construction_archive.html'

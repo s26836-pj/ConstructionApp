@@ -1,28 +1,21 @@
 {% extends 'base.html' %}
-
-{% block title %}Constructions List{% endblock %}
+{% block title %}User List{% endblock %}
 
 {% block content %}
-  <h1 class="mb-4">Constructions</h1>
-  {% if constructions %}
-    <ul class="list-group">
-      {% for construction in constructions %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <!-- Załóżmy, że chcesz wyświetlić nazwę i lokalizację -->
-          <div>
-            <strong>{{ construction.name }}</strong><br>
-            <small>{{ construction.location }}</small>
-          </div>
-          <!-- Opcjonalnie możesz dodać przyciski np. do edycji lub usunięcia -->
-          <div>
-            <a href="{% url 'construction_detail' construction.pk %}" class="btn btn-sm btn-primary me-1">Detail</a>
-            <a href="{% url 'construction_update' construction.pk %}" class="btn btn-sm btn-warning me-1">Edit</a>
-            <a href="{% url 'construction_delete' construction.pk %}" class="btn btn-sm btn-danger">Delete</a>
-          </div>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No constructions available.</p>
-  {% endif %}
+<h2>User List</h2>
+<ul class="list-group">
+    {% for account in accounts %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <strong>{{ account.get_full_name|default:account.username }}</strong><br>
+            <small>{{ account.email }}</small>
+        </div>
+        <div>
+            <a href="{% url 'account_update' account.pk %}" class="btn btn-sm btn-warning">Edit</a>
+        </div>
+    </li>
+    {% empty %}
+    <li class="list-group-item">No accounts found.</li>
+    {% endfor %}
+</ul>
 {% endblock %}

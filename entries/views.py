@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
 from django.views.generic import UpdateView, DeleteView, DetailView
@@ -5,13 +6,13 @@ from django.views.generic import UpdateView, DeleteView, DetailView
 from entries.models import Entry
 
 
-class EntryDetailView(DetailView):
+class EntryDetailView(LoginRequiredMixin, DetailView):
     model = Entry
     template_name = 'entries/entry_detail.html'
     context_object_name = 'entry'
 
 
-class EntryListView(ListView):
+class EntryListView(LoginRequiredMixin, ListView):
     model = Entry
     template_name = 'entries/entry_list.html'
     context_object_name = 'entries'
@@ -42,20 +43,20 @@ class EntryListView(ListView):
 
         return qs
 
-class EntryCreateView(CreateView):
+class EntryCreateView(LoginRequiredMixin, CreateView):
     model = Entry
     template_name = 'entries/entry_create.html'
     context_object_name = 'entry'
     success_url = reverse_lazy('entry_list')
 
-class EntryUpdateView(UpdateView):
+class EntryUpdateView(LoginRequiredMixin, UpdateView):
     model = Entry
     template_name = 'entries/entry_update.html'
     context_object_name = 'entry'
     success_url = reverse_lazy('entry_list')
 
 
-class EntryDeleteView(DeleteView):
+class EntryDeleteView(LoginRequiredMixin, DeleteView):
     model = Entry
     template_name = 'entries/entry_delete.html'
     context_object_name = 'entry'

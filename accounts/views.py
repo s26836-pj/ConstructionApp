@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import redirect
 from django.utils.encoding import force_str
@@ -17,33 +18,34 @@ from accounts.utils import send_activation_email
 from django.contrib import messages
 
 
-class UserCreateView(CreateView):
+class UserCreateView(LoginRequiredMixin, CreateView):
     form_class = CustomUserCreationForm
-    template_name = 'users/user_create.html'
-    success_url = reverse_lazy('user_list')
+    template_name = 'accounts/account_create.html'
+    success_url = reverse_lazy('account_list')
 
     def form_valid(self, form):
         response = super().form_valid(form)
         send_activation_email(self.object)
         return response
 
-class UserListView(ListView):
+class UserListView(LoginRequiredMixin, ListView):
     model = get_user_model()
-    template_name = 'users/user_list.html'
-    context_object_name = 'users'
-    success_url = reverse_lazy('user_list')
+    template_name = 'accounts/account_list.html'
+    context_object_name = 'accounts'
+    success_url = reverse_lazy('account_list')
 
-class UserUpdateView(UpdateView):
+class UserUpdateView(LoginRequiredMixin, UpdateView):
+    model = get_user_model()
     form_class = CustomUserUpdateForm
-    template_name = 'users/user_update.html'
-    success_url = reverse_lazy('user_list')
+    template_name = 'accounts/account_update.html'
+    success_url = reverse_lazy('account_list')
 
-class UserPasswordResetView(PasswordResetView):
+class UserPasswordResetView(LoginRequiredMixin, PasswordResetView):
     template_name = 'accounts/password_reset.html'
     email_template_name = 'accounts/password_reset_email.html'
     success_url = reverse_lazy('password_reset_done')
 
-class ActivateAccountView(FormView):
+class ActivateAccountView(LoginRequiredMixin, FormView):
     template_name = 'accounts/activate_account.html'
     form_class = SetPasswordForm
     success_url = reverse_lazy('user_list')  # możesz zmienić na 'user_list' jeśli wolisz
