@@ -1,24 +1,23 @@
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.views import PasswordResetView
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, FormView
-
-from django.contrib.auth import get_user_model
-from django.contrib.auth.views import PasswordResetView
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import FormView
 from pyexpat.errors import messages
 
-from accounts.forms import CustomUserCreationForm, CustomUserUpdateForm
+from accounts.base_views import BaseAdminUpdateView, BaseAdminCreateView, BaseAdminListView, BaseLoginRequiredListView
+from accounts.forms import CustomUserCreationForm, CustomUserUpdateForm, AdminUserUpdateForm
+from accounts.models import CustomUser
 from accounts.utils import send_activation_email
-from django.contrib import messages
 
 
-class UserCreateView(LoginRequiredMixin, CreateView):
+class UserCreateView(BaseAdminCreateView):
     form_class = CustomUserCreationForm
     template_name = 'accounts/account_create.html'
     success_url = reverse_lazy('account_list')
@@ -28,27 +27,43 @@ class UserCreateView(LoginRequiredMixin, CreateView):
         send_activation_email(self.object)
         return response
 
-class UserListView(LoginRequiredMixin, ListView):
+class UserListView(BaseLoginRequiredListView):
     model = get_user_model()
     template_name = 'accounts/account_list.html'
     context_object_name = 'accounts'
     success_url = reverse_lazy('account_list')
 
-class UserUpdateView(LoginRequiredMixin, UpdateView):
-    model = get_user_model()
-    form_class = CustomUserUpdateForm
-    template_name = 'accounts/account_update.html'
+class UserUpdateView(BaseAdminUpdateView):
+    model = CustomUser
+    template_name = 'users/user_update.html'
     success_url = reverse_lazy('account_list')
+
+    def get_form_class(self):
+        if self.request.user.is_superuser:
+            return AdminUserUpdateForm
+        return CustomUserUpdateForm
+
+    def form_valid(self, form):
+        # dodatkowe zabezpieczenie na backendzie (na wszelki wypadek)
+        if not self.request.user.is_superuser:
+            form.instance.role = self.get_object().role
+        return super().form_valid(form)
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_superuser and self.get_object() != request.user:
+            return redirect('account_list')  # lub 403
+        return super().dispatch(request, *args, **kwargs)
+
 
 class UserPasswordResetView(LoginRequiredMixin, PasswordResetView):
     template_name = 'accounts/password_reset.html'
     email_template_name = 'accounts/password_reset_email.html'
     success_url = reverse_lazy('password_reset_done')
 
-class ActivateAccountView(LoginRequiredMixin, FormView):
+class ActivateAccountView(FormView):
     template_name = 'accounts/activate_account.html'
     form_class = SetPasswordForm
-    success_url = reverse_lazy('user_list')  # możesz zmienić na 'user_list' jeśli wolisz
+    success_url = reverse_lazy('account_list')
 
     def dispatch(self, request, *args, **kwargs):
         self.uidb64 = kwargs.get('uidb64')
@@ -71,6 +86,12 @@ class ActivateAccountView(LoginRequiredMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
-        form.save()
-        messages.success(self.request, "Your password has been set. You can now log in.")
-        return super().form_valid(form)
+        if form.cleaned_data.get('new_password1'):
+            form.save()
+            self.user.is_active = True
+            self.user.save()
+            messages.success(self.request, "Your account has been activated. You can now log in.")
+            return super().form_valid(form)
+        else:
+            messages.error(self.request, "Password was not set. Activation failed.")
+            return redirect('login')

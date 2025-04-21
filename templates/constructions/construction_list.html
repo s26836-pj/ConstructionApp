@@ -39,5 +39,7 @@
   <p>No constructions available.</p>
 {% endif %}
 
+{% if request.user.is_superuser %}
 <a href="{% url 'construction_create' %}" class="btn btn-success">Create New Construction</a>
+{% endif %}
 {% endblock %}

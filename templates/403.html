@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Access Denied{% endblock %}
+
+{% block content %}
+<div class="alert alert-danger mt-4 text-center">
+  <h3>Insufficient Permissions</h3>
+  <p>You do not have the required access to view this page.</p>
+  <a href="{% url 'construction_list' %}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+</div>
+{% endblock %}

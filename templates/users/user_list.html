@@ -2,20 +2,22 @@
 {% block title %}Lista użytkowników{% endblock %}
 
 {% block content %}
-  <h2>Lista użytkowników</h2>
-  <ul class="list-group">
-    {% for user in users %}
-      <li class="list-group-item d-flex justify-content-between align-items-center">
+<h2>Lista użytkowników</h2>
+<ul class="list-group">
+    {% for user in accounts %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
         <div>
-          <strong>{{ user.get_full_name|default:user.username }}</strong><br>
-          <small>{{ user.email }}</small>
+            <strong>{{ user.get_full_name|default:user.username }}</strong><br>
+            <small>{{ user.email }}</small>
         </div>
         <div>
-          <a href="{% url 'user_update' user.pk %}" class="btn btn-sm btn-warning">Edytuj</a>
+            {% if request.user.is_superuser %}
+            <a class="btn btn-sm btn-warning" href="{% url 'account_update' user.id %}">Edit</a>
+            {% endif %}
         </div>
-      </li>
+    </li>
     {% empty %}
-      <li class="list-group-item">Brak użytkowników.</li>
+    <li class="list-group-item">Brak użytkowników.</li>
     {% endfor %}
-  </ul>
+</ul>
 {% endblock %}

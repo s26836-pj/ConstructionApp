@@ -1,7 +1,10 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, UpdateView, CreateView
 
+from accounts.views import (
+    BaseAdminCreateView,
+    BaseAdminUpdateView,
+    BaseLoginRequiredListView
+)
 from .forms import (
     ConstructionCreateForm,
     ConstructionUpdateForm,
@@ -10,9 +13,7 @@ from .forms import (
 from .models import Construction
 
 
-# Widok listy budów – domyślnie pokazuje tylko aktywne budowy (is_archived=False);
-# administrator może przełączyć się na wyświetlanie zarchiwizowanych za pomocą parametru GET.
-class ConstructionListView(LoginRequiredMixin, ListView):
+class ConstructionListView(BaseLoginRequiredListView):
     model = Construction
     template_name = 'constructions/construction_list.html'
     context_object_name = 'constructions'
@@ -30,23 +31,24 @@ class ConstructionListView(LoginRequiredMixin, ListView):
 
 
 # Widok tworzenia budowy
-class ConstructionCreateView(LoginRequiredMixin, CreateView):
+class ConstructionCreateView(BaseAdminCreateView):
     form_class = ConstructionCreateForm
     template_name = 'constructions/construction_form.html'
     success_url = reverse_lazy('construction_list')
 
 
 # Widok edycji budowy (bez archiwizacji)
-class ConstructionUpdateView(LoginRequiredMixin, UpdateView):
+class ConstructionUpdateView(BaseAdminUpdateView):
     model = Construction
     form_class = ConstructionUpdateForm
     template_name = 'constructions/construction_form.html'
     success_url = reverse_lazy('construction_list')
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(is_archived=False)
 
-# Widok archiwizacji budowy – zamiast usuwania budowy, administrator może ją zarchiwizować.
-# Używamy dedykowanego formularza, który umożliwia podanie (opcjonalnie) powodu archiwizacji.
-class ConstructionArchiveView(LoginRequiredMixin, UpdateView):
+class ConstructionArchiveView(BaseAdminUpdateView):
     model = Construction
     form_class = ConstructionArchiveForm
     template_name = 'constructions/construction_archive.html'
@@ -55,3 +57,8 @@ class ConstructionArchiveView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         form.instance.is_archived = True
         return super().form_valid(form)
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(is_archived=False)
+
