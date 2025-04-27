@@ -1,5 +1,7 @@
 from django.urls import reverse_lazy
+from django.views.generic import DetailView
 
+from accounts.base_views import BaseLoginRequiredView
 from accounts.views import (
     BaseAdminCreateView,
     BaseAdminUpdateView,
@@ -17,16 +19,15 @@ class ConstructionListView(BaseLoginRequiredListView):
     model = Construction
     template_name = 'constructions/construction_list.html'
     context_object_name = 'constructions'
+    paginate_by = 2
 
     def get_queryset(self):
         qs = super().get_queryset()
         show_archived = self.request.GET.get('show_archived', 'false').lower()
 
         if show_archived == 'true':
-            # Pokaż TYLKO zarchiwizowane
             return qs.filter(is_archived=True)
         else:
-            # Pokaż TYLKO aktywne
             return qs.filter(is_archived=False)
 
 
@@ -62,3 +63,7 @@ class ConstructionArchiveView(BaseAdminUpdateView):
         qs = super().get_queryset()
         return qs.filter(is_archived=False)
 
+class ConstructionDetailView(BaseLoginRequiredView, DetailView):
+    model = Construction
+    template_name = 'constructions/construction_detail.html'
+    context_object_name = 'construction'

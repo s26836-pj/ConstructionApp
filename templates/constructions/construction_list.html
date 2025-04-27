@@ -6,40 +6,91 @@
 <h1>Constructions</h1>
 
 <div class="mb-3">
-  <!-- Link do zarchiwizowanych -->
-  <a href="{% url 'construction_list' %}?show_archived=true" class="btn btn-secondary">
-    Pokaż zarchiwizowane
-  </a>
-  <!-- Link do aktywnych -->
-  <a href="{% url 'construction_list' %}" class="btn btn-secondary">
-    Pokaż tylko aktywne
-  </a>
+    <!-- Links to active/archived constructions -->
+    <a href="{% url 'construction_list' %}?show_archived=true" class="btn btn-secondary">
+        Show Archived
+    </a>
+    <a href="{% url 'construction_list' %}" class="btn btn-secondary">
+        Show Active Only
+    </a>
 </div>
 
 {% if constructions %}
-  <ul class="list-group my-3">
+<ul class="list-group my-3">
     {% for construction in constructions %}
-      <li class="list-group-item d-flex justify-content-between align-items-center">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
         <div>
-          <strong>{{ construction.name }}</strong><br>
-          <small>{{ construction.location }}</small>
+            <strong>
+                <a href="{% url 'construction_detail' construction.pk %}" class="text-decoration-none">
+                    {{ construction.name }}
+                </a>
+            </strong><br>
+            <small>{{ construction.location }}</small>
         </div>
-        <div>
-          {% if not construction.is_archived %}
+        <div class="d-flex align-items-center">
+            {% if not construction.is_archived %}
             <a href="{% url 'construction_update' construction.pk %}" class="btn btn-sm btn-warning me-2">Edit</a>
             <a href="{% url 'construction_archive' construction.pk %}" class="btn btn-sm btn-secondary me-2">Archive</a>
-          {% else %}
+            {% else %}
             <span class="badge bg-danger me-2">Archived</span>
-          {% endif %}
+            {% endif %}
         </div>
-      </li>
+    </li>
     {% endfor %}
-  </ul>
+</ul>
+
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center mt-4">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link"
+               href="?page={{ page_obj.previous_page_number }}{% if request.GET.show_archived %}&show_archived={{ request.GET.show_archived }}{% endif %}"
+               aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link" aria-hidden="true">&laquo;</span>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <li class="page-item active">
+            <span class="page-link">{{ num }}</span>
+        </li>
+        {% else %}
+        <li class="page-item">
+            <a class="page-link"
+               href="?page={{ num }}{% if request.GET.show_archived %}&show_archived={{ request.GET.show_archived }}{% endif %}">
+                {{ num }}
+            </a>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link"
+               href="?page={{ page_obj.next_page_number }}{% if request.GET.show_archived %}&show_archived={{ request.GET.show_archived }}{% endif %}"
+               aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link" aria-hidden="true">&raquo;</span>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+
 {% else %}
-  <p>No constructions available.</p>
+<p>No constructions available.</p>
 {% endif %}
 
 {% if request.user.is_superuser %}
-<a href="{% url 'construction_create' %}" class="btn btn-success">Create New Construction</a>
+<a href="{% url 'construction_create' %}" class="btn btn-success mt-3">Create New Construction</a>
 {% endif %}
 {% endblock %}

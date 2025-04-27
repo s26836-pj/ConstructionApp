@@ -16,7 +16,7 @@ class EntryListView(LoginRequiredMixin, ListView):
     model = Entry
     template_name = 'entries/entry_list.html'
     context_object_name = 'entries'
-    paginate_by = 20  # Opcjonalnie: paginacja listy wpisów
+    paginate_by = 1
 
     def get_queryset(self):
         qs = super().get_queryset().order_by('-created_at')
@@ -48,6 +48,17 @@ class EntryCreateView(LoginRequiredMixin, CreateView):
     template_name = 'entries/entry_create.html'
     context_object_name = 'entry'
     success_url = reverse_lazy('entry_list')
+    fields = ['construction', 'operational_activity', 'content']
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        for field_name, field in form.fields.items():
+            field.widget.attrs.update({'class': 'form-control'})
+        return form
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
 class EntryUpdateView(LoginRequiredMixin, UpdateView):
     model = Entry

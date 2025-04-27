@@ -32,6 +32,7 @@ class UserListView(BaseLoginRequiredListView):
     template_name = 'accounts/account_list.html'
     context_object_name = 'accounts'
     success_url = reverse_lazy('account_list')
+    paginate_by = 2
 
 class UserUpdateView(BaseAdminUpdateView):
     model = CustomUser

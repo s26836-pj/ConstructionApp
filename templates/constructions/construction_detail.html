@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Construction Details{% endblock %}
+
+{% block content %}
+<h1>Construction Details</h1>
+
+<div class="card mt-4">
+  <div class="card-body">
+    <h5 class="card-title">{{ construction.name }}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">{{ construction.location }}</h6>
+
+    <p class="card-text mt-3">
+      <strong>Working Hours:</strong> {{ construction.working_hours }}<br>
+      <strong>Description:</strong> {{ construction.description|default:"No description provided." }}
+    </p>
+
+    {% if construction.is_archived %}
+    <span class="badge bg-danger">Archived</span>
+    {% endif %}
+  </div>
+</div>
+
+<a href="{% url 'construction_list' %}" class="btn btn-secondary mt-4">Back to Constructions</a>
+{% endblock %}
